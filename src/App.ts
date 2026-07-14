@@ -13,7 +13,7 @@ export class App {
         this.scene = scene;
         this.physicsEngine = physics;
 
-        this.startRenderLoop(); //#TODO
+        this.startRenderLoop(); //TODO
     }
 
     public static async create(): Promise<App> {
@@ -36,16 +36,16 @@ export class App {
             this.scene.render();
         });
         window.addEventListener("resize", () => this.graphicsEngine.resize());
-        console.log("Havok Physics Start"); //#TODO
+        console.log("Havok Physics Start"); //TODO
     }
 
     public test(): void {
-        this.createTempScene(); //#TODO
+        this.createTempScene(); //TODO
     }
         
     private createTempScene(): void {
         const light = new HemisphericLight("light", new Vector3(0, 1, 0), this.scene);
         const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 }, this.scene);
         sphere.position.y = 4;
-    }
+    } //TODO
 }
