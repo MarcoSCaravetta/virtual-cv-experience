@@ -48,3 +48,4 @@ export class App {
         const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 }, this.scene);
         sphere.position.y = 4;
     }
+}
