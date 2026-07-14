@@ -1,47 +1,50 @@
 import { Engine, Scene, Vector3, HemisphericLight, MeshBuilder, HavokPlugin } from "@babylonjs/core";
-import HavokPhysics from "@babylonjs/havok"
+import HavokPhysics from "@babylonjs/havok";
 
 export class App {
     private canvas: HTMLCanvasElement;
-    private engine: Engine;
+    private graphicsEngine: Engine;
+    private physicsEngine: HavokPlugin;
     private scene: Scene;
 
-    constructor() {
-        this.canvas = this.createCanvas();
-        this.engine = new Engine(this.canvas, true);
-        this.scene = new Scene(this.engine);
+    private constructor(canvas: HTMLCanvasElement, engine: Engine, scene: Scene, physics: HavokPlugin) {
+        this.canvas = canvas;
+        this.graphicsEngine = engine;
+        this.scene = scene;
+        this.physicsEngine = physics;
 
-        window.addEventListener("resize", () => this.engine.resize());
-
-        this.init();
+        this.startRenderLoop(); //#TODO
     }
 
-    private async init(): Promise<void> {
-        const havokInstance = await HavokPhysics();
-        const hkPlugin = new HavokPlugin(true, havokInstance);
-        this.scene.enablePhysics(new Vector3(0, -9.81, 0), hkPlugin);
-
-        this.createTempScene();
-
-        this.engine.runRenderLoop(() => {
-            this.scene.render();
-        });
-
-        console.log("Havok Physics Start");
-    }
-
-    private createCanvas(): HTMLCanvasElement {
+    public static async create(): Promise<App> {
         const canvas = document.createElement("canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100 %";
         canvas.id = "gameCanvas";
         document.body.appendChild(canvas);
-        return canvas;
+
+        const graphicsEngine = new Engine(canvas, true);
+        const scene = new Scene(graphicsEngine);
+
+        const havokRuntime = await HavokPhysics();
+        const physicsEngine = new HavokPlugin(true, havokRuntime);
+        scene.enablePhysics(new Vector3(0, -9.91, 0), physicsEngine);
+
+        return new App(canvas, graphicsEngine, scene, physicsEngine);
+    }
+    
+    private startRenderLoop(): void {
+        this.graphicsEngine.runRenderLoop(() => {
+            this.scene.render();
+        });
+        window.addEventListener("resize", () => this.graphicsEngine.resize());
+        console.log("Havok Physics Start"); //#TODO
     }
 
+    public test(): void {
+        this.createTempScene(); //#TODO
+    }
+        
     private createTempScene(): void {
         const light = new HemisphericLight("light", new Vector3(0, 1, 0), this.scene);
         const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 }, this.scene);
         sphere.position.y = 4;
     }
-}
